@@ -1,6 +1,6 @@
 # naFilaPlus — Backend (Flask)
 
-API em **Flask + SQLite + CORS**. Para a avaliação do MVP, **somente o provedor DummyJSON** é utilizado para autenticação externa (estável e público).
+API em Flask + SQLite + CORS. **O provedor de autenticação é o DummyJSON**.
 
 ---
 
@@ -15,36 +15,54 @@ docker rm -f nafila-backend 2>/dev/null || true
 docker build -t nafila-backend .
 ```
 
-## ▶️ Execução (padrão recomendado — DummyJSON)
-O DummyJSON usa **username** no lugar de e‑mail. Credenciais públicas e estáveis:
+## ▶️ Execução
+Credenciais de teste:
 - **username:** `emilys`
 - **password:** `emilyspass`
 
 ```bash
-docker run -d --name nafila-backend -p 5000:5000 nafila-backend
+docker run -d --name nafila-backend -p 5000:5000   -e EXTERNAL_AUTH_MODE=dummyjson   nafila-backend
 ```
-> A imagem já inicia usando **DummyJSON** por padrão, não é necessário setar variáveis.
 
-Teste rápido:
+### Teste rápido
 ```bash
 curl -s http://127.0.0.1:5000/health
+# -> {"status":"ok"}
+
 curl -s -X POST http://127.0.0.1:5000/auth/login   -H 'Content-Type: application/json'   -d '{"email":"emilys","password":"emilyspass"}'
 # -> 200 OK + {"message":"Login bem-sucedido","token":"..."}
 ```
-
 ---
 
 ## 📚 Endpoints
 - `GET /health` → `{"status":"ok"}`
 - `POST /auth/login` → autentica no DummyJSON
-- `GET /contents` → lista conteúdos (filtros opcionais `?status=&tipo=`)
+- `GET /contents` → lista conteúdos
 - `POST /contents` → cria conteúdo
-- `PUT /contents/:id` → atualiza
+- `PUT /contents/:id` → atualiza (título/tipo/status/progresso)
 - `DELETE /contents/:id` → remove
 
 ---
 
-## ✅ Validação rápida do MVP
-1. Suba o backend.
-2. Faça login com `emilys / emilyspass`.
-3. Use o frontend para CRUD, progresso e reordenação.
+## 🧭 Fluxograma (Mermaid)
+
+```mermaid
+flowchart LR
+    U[Usuário] --> FE[Frontend (HTML/CSS/JS)]
+    FE -->|POST /auth/login<br/>username+password| BE[Backend Flask]
+    BE -->|EXTERNAL_AUTH_MODE=dummyjson| DJ[DummyJSON /auth/login]
+    DJ -->|token 200| BE
+    BE -->|JSON {token}| FE
+
+    FE -->|GET /contents| BE
+    BE -->|SELECT| DB[(SQLite)]
+    DB --> BE --> FE
+
+    FE -->|POST/PUT/DELETE /contents| BE
+    BE -->|INSERT/UPDATE/DELETE| DB
+    DB --> BE --> FE
+```
+
+---
+
+
