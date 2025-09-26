@@ -30,16 +30,6 @@ curl -s http://127.0.0.1:5000/health
 curl -s -X POST http://127.0.0.1:5000/auth/login   -H 'Content-Type: application/json'   -d '{"email":"emilys","password":"emilyspass"}'
 ```
 
-## ▶️ Execução alternativa — **ReqRes** (padrão)
-Credenciais de demonstração do serviço:
-- **e‑mail:** `eve.holt@reqres.in`
-- **senha:** `cityslicka`
-
-```bash
-docker rm -f nafila-backend 2>/dev/null || true
-docker run -d --name nafila-backend -p 5000:5000 nafila-backend
-```
-
 > ⚠️ Observação: o endpoint público do ReqRes pode retornar `401` dependendo de políticas do serviço. Para a avaliação do MVP, prefira **DummyJSON** (instruções acima).
 
 ---
