@@ -1,6 +1,6 @@
 # naFilaPlus — Backend (Flask)
 
-API em Flask com SQLite e CORS. Suporta autenticação externa **ReqRes** (padrão) ou **DummyJSON** e um **bypass** opcional para desenvolvimento.
+API em Flask com SQLite e CORS. Suporta autenticação externa **DummyJSON** (recomendado) ou **ReqRes** e possui **bypass** opcional para desenvolvimento.
 
 ---
 
@@ -21,21 +21,26 @@ O DummyJSON usa **username** no lugar de e‑mail. Credenciais públicas e está
 - **password:** `emilyspass`
 
 ```bash
-docker run -d --name nafila-backend -p 5000:5000   -e EXTERNAL_AUTH_MODE=dummyjson   nafila-backend
+docker run -d --name nafila-backend -p 5000:5000 \
+  -e EXTERNAL_AUTH_MODE=dummyjson \
+  nafila-backend
 ```
 
 Teste rápido:
 ```bash
 curl -s http://127.0.0.1:5000/health
-curl -s -X POST http://127.0.0.1:5000/auth/login   -H 'Content-Type: application/json'   -d '{"email":"emilys","password":"emilyspass"}'
+curl -s -X POST http://127.0.0.1:5000/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"emilys","password":"emilyspass"}'
+# -> 200 OK + {"message":"Login bem-sucedido","token":"..."}
 ```
 
-> ⚠️ Observação: o endpoint público do ReqRes pode retornar `401` dependendo de políticas do serviço. Para a avaliação do MVP, prefira **DummyJSON** (instruções acima).
+> ℹ️ Se preferir **ReqRes** (usa *e‑mail*), rode sem `EXTERNAL_AUTH_MODE` ou defina `EXTERNAL_AUTH_MODE=reqres`. Atenção: o endpoint público do ReqRes pode responder `401` dependendo de políticas do serviço; para a avaliação do MVP, prefira **DummyJSON**.
 
 ---
 
 ## 🔌 Variáveis de ambiente
-- `EXTERNAL_AUTH_MODE` — `reqres` (default) ou `dummyjson`
+- `EXTERNAL_AUTH_MODE` — `dummyjson` (recomendado) ou `reqres` (padrão se não definido)
 - `EXTERNAL_AUTH_URL` — sobrescreve a URL do provedor externo (opcional)
 - `BYPASS_EXTERNAL_AUTH=1` — ativa login fake (`token: dev-local`) **apenas para DEV**
 
@@ -50,13 +55,13 @@ docker run -d --name nafila-backend -p 5000:5000 --env-file .env nafila-backend
 - `GET /health` → `{"status":"ok"}`
 - `POST /auth/login` → autentica no provedor externo (ou bypass, se habilitado)
 - `GET /contents` → lista conteúdos (filtros opcionais `?status=&tipo=`)
-- `POST /contents` → cria conteúdo
+- `POST /contents` → cria conteúdo (progresso inicial = 0)
 - `PUT /contents/:id` → atualiza
 - `DELETE /contents/:id` → remove
 
 ---
 
-## ✅ Validação rápida do MVP
-1. Suba o backend (DummyJSON recomendado).
-2. Faça login com `emilys / emilyspass`.
-3. Use o frontend para CRUD e verificar progresso/drag‑and‑drop.
+## ✅ Roteiro de validação do MVP
+1. Suba o backend **em DummyJSON** (comando acima).
+2. Faça login com `emilys / emilyspass` pelo frontend.
+3. Execute o CRUD, use “Concluir” e reordene com **drag‑and‑drop** (ordem persiste no navegador).
