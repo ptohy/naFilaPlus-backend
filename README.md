@@ -1,9 +1,5 @@
 # naFilaPlus — Backend (Flask)
 
-API em Flask + SQLite + CORS. **O provedor de autenticação é o DummyJSON**.
-
----
-
 ## 🔧 Pré‑requisitos
 - Docker
 
