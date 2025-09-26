@@ -32,33 +32,25 @@ def health():
 @app.route("/auth/login", methods=["POST"])
 def login():
     data = request.get_json(silent=True) or {}
-    email = (data.get("email") or "").strip()
+    email = (data.get("email") or "").strip()      # <- aqui pode ser "username" (DummyJSON usa username)
     password = (data.get("password") or "").strip()
     if not email or not password:
-        return jsonify({"error": "Email e senha são obrigatórios"}), 400
+        return jsonify({"error": "Email/usuário e senha são obrigatórios"}), 400
 
-    # BYPASS opcional
+    # BYPASS opcional (apenas DEV)
     if (os.getenv("BYPASS_EXTERNAL_AUTH") or "").strip() == "1":
         return jsonify({"message": "Login bem-sucedido", "token": "dev-local"}), 200
 
-    # Autodetecção:
-    # - se EXTERNAL_AUTH_MODE estiver vazio:
-    #   - com "@": ReqRes (email)
-    #   - sem "@": DummyJSON (username)
-    mode = (os.getenv("EXTERNAL_AUTH_MODE") or "").lower()
-    if not mode:
-        mode = "reqres" if "@" in email else "dummyjson"
-
-    if mode == "dummyjson":
-        auth_url = (os.getenv("EXTERNAL_AUTH_URL") or "https://dummyjson.com/auth/login").strip()
-        payload = {"username": email, "password": password}
-    else:
-        auth_url = (os.getenv("EXTERNAL_AUTH_URL") or "https://reqres.in/api/login").strip()
-        payload = {"email": email, "password": password}
+    # 🔒 ReqRes DESATIVADO. Somente DummyJSON:
+    # - username: emilys
+    # - password: emilyspass
+    auth_url = (os.getenv("EXTERNAL_AUTH_URL") or "https://dummyjson.com/auth/login").strip()
+    payload = {"username": email, "password": password}
 
     try:
         r = requests.post(auth_url, json=payload, timeout=10)
         if r.status_code >= 400:
+            # DummyJSON retorna {"message":"Invalid credentials"} para credenciais erradas
             try:
                 body = r.json()
             except Exception:
@@ -94,8 +86,12 @@ def add_content():
     for f in ["title", "tipo", "status"]:
         if not data.get(f):
             return jsonify({"error": f"Campo obrigatório ausente: {f}"}), 400
-    title = data["title"]; tipo = data["tipo"]; status = data["status"]
-    progresso = int(data.get("progresso", 0) or 0)  # default 0
+    title = data["title"]
+    tipo = data["tipo"]
+    status = data["status"]
+    # Sempre 0 no cadastro inicial
+    progresso = 0
+
     with get_db_conn() as conn:
         c = conn.cursor()
         c.execute("INSERT INTO contents (title, tipo, status, progresso) VALUES (?, ?, ?, ?)",
@@ -110,7 +106,9 @@ def update_content(content_id):
     for f in ["title", "tipo", "status"]:
         if not data.get(f):
             return jsonify({"error": f"Campo obrigatório ausente: {f}"}), 400
-    title = data["title"]; tipo = data["tipo"]; status = data["status"]
+    title = data["title"]
+    tipo = data["tipo"]
+    status = data["status"]
     progresso = int(data.get("progresso", 0) or 0)
     with get_db_conn() as conn:
         c = conn.cursor()
@@ -132,5 +130,5 @@ def delete_content(content_id):
     return jsonify({"message": "Deletado com sucesso"})
 
 if __name__ == "__main__":
+    # Flask rodando em 0.0.0.0 para o container expor a porta
     app.run(host="0.0.0.0", port=5000, debug=False)
-
