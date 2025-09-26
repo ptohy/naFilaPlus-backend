@@ -1,58 +1,70 @@
 # naFilaPlus — Backend (Flask)
 
-API em Flask com SQLite e CORS. Autenticacao externa fixa via DummyJSON.
+---
 
-Credenciais publicas para teste:
-- username: `emilys`
-- password: `emilyspass`
+## 🔧 Pré‑requisitos
+- Docker
 
 ---
 
-## Build & Run
+## 🚀 Build
 ```bash
 docker rm -f nafila-backend 2>/dev/null || true
 docker build -t nafila-backend .
+```
+
+## ▶️ Execução (modo padrão: DummyJSON)
+Credenciais públicas e estáveis do provedor:
+- **username:** `emilys`
+- **password:** `emilyspass`
+
+```bash
 docker run -d --name nafila-backend -p 5000:5000 nafila-backend
 ```
 
-### Teste rapido
+Teste rápido:
 ```bash
-# Saude
 curl -s http://127.0.0.1:5000/health
-# Login (usa username no campo "email")
-curl -s -X POST http://127.0.0.1:5000/auth/login   -H 'Content-Type: application/json'   -d '{"email":"emilys","password":"emilyspass"}'
+curl -s -X POST http://127.0.0.1:5000/auth/login \  -H 'Content-Type: application/json' \  -d '{"email":"emilys","password":"emilyspass"}'
+# -> 200 OK + {"message":"Login bem-sucedido","token":"..."}
 ```
 
-O backend responde `{"message":"Login bem-sucedido","token":"..."}` ao autenticar no DummyJSON.
+---
+
+## 📚 Endpoints
+- `GET /health` → `{"status":"ok"}`
+- `POST /auth/login` → autentica no provedor externo (DummyJSON)
+- `GET /contents` → lista conteúdos
+- `POST /contents` → cria conteúdo
+- `PUT /contents/:id` → atualiza
+- `DELETE /contents/:id` → remove
 
 ---
 
-## Endpoints
-- GET /health -> {"status":"ok"}
-- POST /auth/login -> autentica no DummyJSON e retorna token
-- GET /contents -> lista conteudos
-- POST /contents -> cria conteudo
-- PUT /contents/:id -> atualiza
-- DELETE /contents/:id -> remove
-
----
-
-## Fluxograma (Mermaid)
+## 📈 Fluxograma (Mermaid)
 ```mermaid
 flowchart LR
-  U[Usuario] --> FE[Frontend]
-  FE -->|POST /auth/login — username,password| BE[Backend Flask]
-  BE -->|chama| DJ[DummyJSON /auth/login]
-  DJ -->|200 + token| BE
-  BE -->|JSON { token }| FE
+  U[User] --> FE[Frontend HTML/CSS/JS]
+  FE -- POST /auth/login with credentials --> BE[Backend Flask]
+  BE -- external auth --> DJ[DummyJSON /auth/login]
+  DJ -- 200 returns token --> BE
+  BE -- JSON {token} --> FE
 
-  FE -->|GET /contents| BE
-  BE -->|SELECT ...| DB[(SQLite)]
-  DB --> BE --> FE
+  FE -- GET /contents --> BE
+  BE --> DB[(SQLite)]
+  DB --> BE
+  BE -- JSON list --> FE
 
-  FE -->|POST/PUT/DELETE /contents| BE
-  BE -->|INSERT/UPDATE/DELETE| DB
-  DB --> BE --> FE
+  FE -- POST /contents --> BE
+  FE -- PUT /contents/:id --> BE
+  FE -- DELETE /contents/:id --> BE
+  BE --> DB
+  DB --> BE
+  BE --> FE
 ```
+
+### Fallback (imagem)
+> Caso seu renderizador não suporte Mermaid no README, use a imagem abaixo.
+<img src="docs/fluxo-mvp.png" alt="Fluxograma do MVP" width="900"/>
 
 ---
