@@ -34,14 +34,6 @@ curl -s -X POST http://127.0.0.1:5000/auth/login   -H 'Content-Type: application
 
 ---
 
-## 🔌 Variáveis de ambiente (opcional)
-- `EXTERNAL_AUTH_URL` — sobrescreve a URL do provedor externo (padrão: `https://dummyjson.com/auth/login`).
-
-> Por padrão nada precisa ser configurado. O backend já autentica no DummyJSON
-> com `username` e `password` (ex.: `emilys / emilyspass`).
-
----
-
 ## 📚 Endpoints
 - `GET /health` → `{"status":"ok"}`
 - `POST /auth/login` → autentica no DummyJSON
