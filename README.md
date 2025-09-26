@@ -63,8 +63,4 @@ flowchart LR
   BE --> FE
 ```
 
-### Fallback (imagem)
-> Caso seu renderizador não suporte Mermaid no README, use a imagem abaixo.
-<img src="docs/fluxo-mvp.png" alt="Fluxograma do MVP" width="900"/>
-
 ---
