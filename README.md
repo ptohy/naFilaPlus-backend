@@ -34,15 +34,11 @@ curl -s -X POST http://127.0.0.1:5000/auth/login   -H 'Content-Type: application
 
 ---
 
-## 🔌 Variáveis de ambiente
-- `BYPASS_EXTERNAL_AUTH=1` — ativa login fake (`token: dev-local`) **apenas para DEV**
-- `EXTERNAL_AUTH_URL` — URL do provedor (opcional; default: `https://dummyjson.com/auth/login`)
-- `EXTERNAL_AUTH_MODE` — já fixado para `dummyjson` por padrão
+## 🔌 Variáveis de ambiente (opcional)
+- `EXTERNAL_AUTH_URL` — sobrescreve a URL do provedor externo (padrão: `https://dummyjson.com/auth/login`).
 
-Exemplo via `--env-file`:
-```bash
-docker run -d --name nafila-backend -p 5000:5000 --env-file .env nafila-backend
-```
+> Por padrão nada precisa ser configurado. O backend já autentica no DummyJSON
+> com `username` e `password` (ex.: `emilys / emilyspass`).
 
 ---
 
