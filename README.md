@@ -40,15 +40,14 @@ curl -s -X POST http://127.0.0.1:5000/auth/login   -H 'Content-Type: application
 
 ---
 
-## 🧭 Fluxograma (Mermaid)
-
-```mermaid
-flowchart LR
-    U[Usuário] --> FE[Frontend (HTML/CSS/JS)]
-    FE -->|POST /auth/login<br/>username+password| BE[Backend Flask]
-    BE -->|EXTERNAL_AUTH_MODE=dummyjson| DJ[DummyJSON /auth/login]
-    DJ -->|token 200| BE
-    BE -->|JSON {token}| FE
+  ## 🔀 Fluxograma (Mermaid)
+  ```mermaid
+  flowchart LR
+    U[Usuário] --> FE[Frontend]
+    FE -->|POST /auth/login (username,password)| BE[Backend Flask]
+    BE -->|DummyJSON| DJ[https://dummyjson.com/auth/login]
+    DJ -->|200 token| BE
+    BE -->|{token}| FE
 
     FE -->|GET /contents| BE
     BE -->|SELECT| DB[(SQLite)]
@@ -57,8 +56,6 @@ flowchart LR
     FE -->|POST/PUT/DELETE /contents| BE
     BE -->|INSERT/UPDATE/DELETE| DB
     DB --> BE --> FE
-```
-
----
+  ```
 
 
