@@ -37,18 +37,12 @@ def login():
     if not email or not password:
         return jsonify({"error": "Email e senha são obrigatórios"}), 400
 
-    # BYPASS opcional
+    # BYPASS opcional: exporte BYPASS_EXTERNAL_AUTH=1 para usar login fake
     if (os.getenv("BYPASS_EXTERNAL_AUTH") or "").strip() == "1":
         return jsonify({"message": "Login bem-sucedido", "token": "dev-local"}), 200
 
-    # Autodetecção:
-    # - se EXTERNAL_AUTH_MODE estiver vazio:
-    #   - com "@": ReqRes (email)
-    #   - sem "@": DummyJSON (username)
-    mode = (os.getenv("EXTERNAL_AUTH_MODE") or "").lower()
-    if not mode:
-        mode = "reqres" if "@" in email else "dummyjson"
-
+    # Modo de auth externo: "reqres" (padrão) ou "dummyjson"
+    mode = (os.getenv("EXTERNAL_AUTH_MODE") or "reqres").lower()
     if mode == "dummyjson":
         auth_url = (os.getenv("EXTERNAL_AUTH_URL") or "https://dummyjson.com/auth/login").strip()
         payload = {"username": email, "password": password}
@@ -95,7 +89,7 @@ def add_content():
         if not data.get(f):
             return jsonify({"error": f"Campo obrigatório ausente: {f}"}), 400
     title = data["title"]; tipo = data["tipo"]; status = data["status"]
-    progresso = int(data.get("progresso", 0) or 0)  # default 0
+    progresso = int(data.get("progresso", 0) or 0)
     with get_db_conn() as conn:
         c = conn.cursor()
         c.execute("INSERT INTO contents (title, tipo, status, progresso) VALUES (?, ?, ?, ?)",
@@ -133,4 +127,4 @@ def delete_content(content_id):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
-
+PY
