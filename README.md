@@ -1,6 +1,6 @@
 # naFilaPlus — Backend (Flask)
 
-API em **Flask + SQLite + CORS**. Para a avaliação do MVP, **somente o provedor DummyJSON** é utilizado para autenticação externa (estável e público). Há também um **bypass** opcional para desenvolvimento.
+API em **Flask + SQLite + CORS**. Para a avaliação do MVP, **somente o provedor DummyJSON** é utilizado para autenticação externa (estável e público).
 
 ---
 
@@ -59,4 +59,4 @@ docker run -d --name nafila-backend -p 5000:5000 --env-file .env nafila-backend
 ## ✅ Validação rápida do MVP
 1. Suba o backend.
 2. Faça login com `emilys / emilyspass`.
-3. Use o frontend para CRUD, progresso e drag‑and‑drop.
+3. Use o frontend para CRUD, progresso e reordenação.
