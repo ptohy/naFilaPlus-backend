@@ -132,3 +132,9 @@ def delete_content(content_id):
 if __name__ == "__main__":
     # Flask rodando em 0.0.0.0 para o container expor a porta
     app.run(host="0.0.0.0", port=5000, debug=False)
+
+@app.after_request
+def add_no_store(resp):
+    resp.headers["Cache-Control"] = "no-store"
+    resp.headers["Pragma"] = "no-cache"
+    return resp
